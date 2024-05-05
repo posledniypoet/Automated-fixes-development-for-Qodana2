@@ -21,13 +21,20 @@ public class Main {
         Path path2 = Paths.get(stringPath2);
         String firstAnalysisLines = Files.readString(path);
         String secondAnalysisLines = Files.readString(path2);
+
         String firstOnlyOutputFile = in.nextLine();
         String secondOnlyOutputFile = in.nextLine();
         String unionOutputFile = in.nextLine();
 
         ObjectMapper objectMapper = new ObjectMapper();
-        ProblemList problemList1 = objectMapper.readValue(firstAnalysisLines, ProblemList.class);
-        ProblemList problemList2 = objectMapper.readValue(secondAnalysisLines, ProblemList.class);
+        ProblemList problemList1;
+        ProblemList problemList2;
+        try {
+            problemList1 = objectMapper.readValue(firstAnalysisLines, ProblemList.class);
+            problemList2 = objectMapper.readValue(secondAnalysisLines, ProblemList.class);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Incorrect Json file format");
+        }
         ArrayList<Problem> problemsUnion = new ArrayList<>();
 
         for (Problem problem1 : problemList1.problems) {
@@ -37,7 +44,7 @@ public class Main {
                 String hashProblem2 = problem2.getHash();
                 Set<String> dataProblem2 = problem2.getData();
                 if (Objects.equals(hashProblem2, hashProblem1) && dataProblem2.size() == dataProblem1.size() && dataProblem2.containsAll(dataProblem1)) {
-                    if(!problemsUnion.contains(problem1))
+                    if (!problemsUnion.contains(problem1))
                         problemsUnion.add(problem1);
                 }
             }
